@@ -25,4 +25,5 @@ jobs:
       - name: execute python workflows from bash script
         env:
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          AIR_QUALITY_API_KEY: ${{ secrets.AIR_QUALITY_API_KEY }}
         run: ./scripts/air_quality_flow.sh
