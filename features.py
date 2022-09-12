@@ -143,9 +143,3 @@ def timestamp_2_time(x):
     dt_obj = datetime.strptime(str(x), '%Y-%m-%d')
     dt_obj = dt_obj.timestamp() * 1000
     return int(dt_obj)
-
-
-def prepare_index(df,index_latest):
-    df.reset_index(inplace=True)
-    df['index'] = df['index'] + index_latest + 1
-    return 
