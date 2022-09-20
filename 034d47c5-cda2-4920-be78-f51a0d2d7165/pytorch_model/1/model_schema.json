@@ -1,0 +1,178 @@
+{
+  "input_schema": {
+    "columnar_schema": [
+      {
+        "name": "city",
+        "type": "object"
+      },
+      {
+        "name": "date",
+        "type": "object"
+      },
+      {
+        "name": "iaqi_h",
+        "type": "object"
+      },
+      {
+        "name": "iaqi_p",
+        "type": "object"
+      },
+      {
+        "name": "iaqi_pm10",
+        "type": "object"
+      },
+      {
+        "name": "iaqi_t",
+        "type": "object"
+      },
+      {
+        "name": "o3_avg",
+        "type": "object"
+      },
+      {
+        "name": "o3_max",
+        "type": "object"
+      },
+      {
+        "name": "o3_min",
+        "type": "object"
+      },
+      {
+        "name": "pm10_avg",
+        "type": "object"
+      },
+      {
+        "name": "pm10_max",
+        "type": "object"
+      },
+      {
+        "name": "pm10_min",
+        "type": "object"
+      },
+      {
+        "name": "pm25_avg",
+        "type": "object"
+      },
+      {
+        "name": "pm25_max",
+        "type": "object"
+      },
+      {
+        "name": "pm25_min",
+        "type": "object"
+      },
+      {
+        "name": "uvi_avg",
+        "type": "object"
+      },
+      {
+        "name": "uvi_max",
+        "type": "object"
+      },
+      {
+        "name": "uvi_min",
+        "type": "object"
+      },
+      {
+        "name": "tempmax",
+        "type": "object"
+      },
+      {
+        "name": "tempmin",
+        "type": "object"
+      },
+      {
+        "name": "temp",
+        "type": "object"
+      },
+      {
+        "name": "feelslikemax",
+        "type": "object"
+      },
+      {
+        "name": "feelslikemin",
+        "type": "object"
+      },
+      {
+        "name": "feelslike",
+        "type": "object"
+      },
+      {
+        "name": "dew",
+        "type": "object"
+      },
+      {
+        "name": "humidity",
+        "type": "object"
+      },
+      {
+        "name": "precip",
+        "type": "object"
+      },
+      {
+        "name": "precipprob",
+        "type": "object"
+      },
+      {
+        "name": "precipcover",
+        "type": "object"
+      },
+      {
+        "name": "snow",
+        "type": "object"
+      },
+      {
+        "name": "snowdepth",
+        "type": "object"
+      },
+      {
+        "name": "windgust",
+        "type": "object"
+      },
+      {
+        "name": "windspeed",
+        "type": "object"
+      },
+      {
+        "name": "winddir",
+        "type": "object"
+      },
+      {
+        "name": "pressure",
+        "type": "object"
+      },
+      {
+        "name": "cloudcover",
+        "type": "object"
+      },
+      {
+        "name": "visibility",
+        "type": "object"
+      },
+      {
+        "name": "solarradiation",
+        "type": "object"
+      },
+      {
+        "name": "solarenergy",
+        "type": "object"
+      },
+      {
+        "name": "uvindex",
+        "type": "object"
+      },
+      {
+        "name": "conditions",
+        "type": "object"
+      }
+    ]
+  },
+  "output_schema": {
+    "columnar_schema": [
+      {
+        "name": "aqi",
+        "type": "object"
+      }
+    ]
+  }
+}
