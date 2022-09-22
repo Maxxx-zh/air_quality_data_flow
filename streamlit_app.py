@@ -9,8 +9,36 @@ import json
 import time
 from branca.element import Figure
 
+
+def get_model():
+    # load our Model
+    import os
+    TARGET_FILE = "model.pkl"
+    list_of_files = [os.path.join(dirpath,filename) for dirpath, _, filenames in os.walk('.') for filename in filenames if filename == TARGET_FILE]
+
+    if list_of_files:
+        model_path = list_of_files[0]
+        model = joblib.load(model_path)
+    else:
+        if not os.path.exists(TARGET_FILE):
+            mr = project.get_model_registry()
+            EVALUATION_METRIC="f1_score"
+            SORT_METRICS_BY="max"
+            # get best model based on custom metrics
+            model = mr.get_best_model("gradient_boost_model",
+                                       EVALUATION_METRIC,
+                                       SORT_METRICS_BY)
+            model_dir = model.download()
+            model = joblib.load(model_dir + "/model.pkl")
+
+
+    return model
+
+
 st.title('⛅️Air Quality Prediction Project🌩')
 
+model = get_model()
+st.write(model)
 
 progress_bar = st.sidebar.header('⚙️ Working Progress')
 progress_bar = st.sidebar.progress(0)
@@ -27,23 +55,26 @@ st.write(36 * "-")
 st.subheader('\n☁️ Getting data from Feature Store...')
 
 
-@st.cache(suppress_st_warning=True)
+# @st.cache(suppress_st_warning=True)
 def get_recent_data():
     feature_view = fs.get_feature_view(name="air_quality_fv")
-    res = feature_view.query.read().sort_values(by=["date", 'city']).head(4)
-    return res
+    data_without_normalization = feature_view.query.read().sort_values(by=["date", 'city'],
+                                                ascending=[False, True]).head(4)
+    data_after_normalization = feature_view.get_training_data(1)[0].sort_values(by=["date", "city"],
+                                                                                ascending=[False, True]).head(4)
+    return data_without_normalization, data_after_normalization
 
 
-recent_weather_data = get_recent_data()
+data_to_display, data_to_predict = get_recent_data()
 
+st.write(data_to_predict)
 
-latest_date_unix = str(recent_weather_data.date.values[0])[:10]
+latest_date_unix = str(data_to_display.date.values[0])[:10]
 
 import time
 latest_date = time.ctime(int(latest_date_unix))
 
-st.write(36 * "-")
-st.subheader(f"Data for {latest_date}")
+st.header(f"Data for {latest_date}")
 
 progress_bar.progress(30)
 
@@ -55,16 +86,16 @@ progress_bar.progress(30)
 st.write(36 * "-")
 st.subheader(f"🗺 Processing the map...")
 
-recent_weather_data = recent_weather_data[["city", "temp", "humidity",
+data_to_display = data_to_display[["city", "temp", "humidity",
                                             "conditions", "aqi"]]
-recent_weather_data = recent_weather_data.set_index("city")
+data_to_display = data_to_display.set_index("city")
 
 cols_names_dict = {"temp": "Temperature",
                    "humidity": "Humidity",
                    "conditions": "Conditions",
-                   "aqi": "Air Quality Index"}
+                   "aqi": "AQI"}
 
-recent_weather_data = recent_weather_data.rename(columns=cols_names_dict)
+data_to_display = data_to_display.rename(columns=cols_names_dict)
 progress_bar.progress(40)
 #
 #     st.subheader('\n🎉 📈 🤝 App Finished Successfully 🤝 📈 🎉')
@@ -99,11 +130,11 @@ for city, country in cities_coords:
                         <td><b>{country}</b></td>
                     </tr>
                     """
-    for column in recent_weather_data.columns:
+    for column in data_to_display.columns:
         text += f"""
                     <tr>
                         <th>{column}:</th>
-                        <td>{recent_weather_data.loc[city][column]}</td>
+                        <td>{data_to_display.loc[city][column]}</td>
                     </tr>"""
     text += """</table>
                     </h5>"""
