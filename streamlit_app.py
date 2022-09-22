@@ -7,6 +7,7 @@ import folium
 from streamlit_folium import st_folium, folium_static
 import json
 import time
+import datetime
 from branca.element import Figure
 
 
@@ -37,8 +38,6 @@ def get_model():
 
 st.title('⛅️Air Quality Prediction Project🌩')
 
-model = get_model()
-st.write(model)
 
 progress_bar = st.sidebar.header('⚙️ Working Progress')
 progress_bar = st.sidebar.progress(0)
@@ -55,28 +54,28 @@ st.write(36 * "-")
 st.subheader('\n☁️ Getting data from Feature Store...')
 
 
-# @st.cache(suppress_st_warning=True)
+@st.cache(suppress_st_warning=True)
 def get_recent_data():
     feature_view = fs.get_feature_view(name="air_quality_fv")
-    data_without_normalization = feature_view.query.read().sort_values(by=["date", 'city'],
+    data_to_display = feature_view.query.read().sort_values(by=["date", 'city'],
                                                 ascending=[False, True]).head(4)
-    data_after_normalization = feature_view.get_training_data(1)[0].sort_values(by=["date", "city"],
-                                                                                ascending=[False, True]).head(4)
-    return data_without_normalization, data_after_normalization
+    X = feature_view.get_training_data(1)[0].sort_values(by=["date", "city"],
+                                                         ascending=[False, True]).head(4)
+    X = X.drop(columns=["date"])
+    return data_to_display, X
 
 
-data_to_display, data_to_predict = get_recent_data()
-
-st.write(data_to_predict)
+data_to_display, X = get_recent_data()
+progress_bar.progress(50)
 
 latest_date_unix = str(data_to_display.date.values[0])[:10]
 
 import time
 latest_date = time.ctime(int(latest_date_unix))
 
-st.header(f"Data for {latest_date}")
+st.write(f"⏱ Data for {latest_date}")
 
-progress_bar.progress(30)
+progress_bar.progress(60)
 
 # train_data = feature_view.get_training_data(1)[0]
 # train_data.sort_values(by=["date", 'city']).head(4)
@@ -96,7 +95,7 @@ cols_names_dict = {"temp": "Temperature",
                    "aqi": "AQI"}
 
 data_to_display = data_to_display.rename(columns=cols_names_dict)
-progress_bar.progress(40)
+progress_bar.progress(75)
 #
 #     st.subheader('\n🎉 📈 🤝 App Finished Successfully 🤝 📈 🎉')
 
@@ -148,7 +147,22 @@ for city, country in cities_coords:
 # call to render Folium map in Streamlit
 folium_static(my_map)
 
+progress_bar.progress(80)
+st.sidebar.write("-" * 36)
 
 
+model = get_model()
+preds = model.predict(X)
 
+cities = ["Malmo", "Stockholm", "Sundsvall", "Kyiv"]
+
+
+next_day_date = datetime.datetime.today() + datetime.timedelta(days=1)
+next_day = next_day_date.strftime ('%d/%m/%Y')
+df = pd.DataFrame(data=preds, index=cities, columns=[f"AQI Predictions for {next_day}"], dtype=int)
+st.sidebar.write(df)
+
+progress_bar.progress(100)
+
+# st.sidebar.markdown(text)
 st.button("Re-run")
