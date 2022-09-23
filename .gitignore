@@ -13,4 +13,4 @@ miniconda/
 **/tmp*
 iris/iris_model
 **/**.pkl
-
+.hw_api_key
